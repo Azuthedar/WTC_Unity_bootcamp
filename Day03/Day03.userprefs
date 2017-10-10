@@ -1,0 +1,14 @@
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/DragAndDrop.cs">
+    <Files>
+      <File FileName="Assets/Scripts/ennemySpawner.cs" Line="53" Column="1" />
+      <File FileName="Assets/Scripts/DragAndDrop.cs" Line="58" Column="39" />
+      <File FileName="Assets/Scripts/UpdateText.cs" Line="17" Column="36" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
