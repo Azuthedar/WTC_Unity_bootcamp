@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+enum eWeaponType
+{
+	TURRET = 0,
+	MISSILE
+}
+
 public class TankRotation : MonoBehaviour {
 
 	// Use this for initialization
@@ -20,13 +26,16 @@ public class TankRotation : MonoBehaviour {
 	private float			_rotationSpeed = 2f;
 	private bool 			_isShooting = false;
 	private bool			_hitEnemy = false;
+	private float			_fireRate;
 	private AudioSource		_as;
+	private eWeaponType		_weaponType;
 
 	void Start ()
 	{
 		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
 		this._as = GetComponent<AudioSource> ();
+		this._fireRate = GetComponentInParent<PlayerController> ().getFireRate ();
 	}
 
 	void Awake()
@@ -58,14 +67,14 @@ public class TankRotation : MonoBehaviour {
 
 		Debug.DrawRay (this.transform.position, -this.transform.up, Color.red);
 
-		if (Physics.Raycast(ray, out hit))
+		if (Physics.Raycast(ray, out hit, Mathf.Infinity))
 		{
-			Debug.Log (hit.collider.tag);
 			if (hit.collider.tag == "Enemy")
 			{
 				this._hitEnemy = true;
 				this.crosshair.color = Color.red;
-				// TODO: Enemy must take damage
+
+				this.doDamage (hit);
 			}
 		}
 	}
@@ -79,6 +88,9 @@ public class TankRotation : MonoBehaviour {
 
 		if (Input.GetMouseButton(0) && !this._isShooting)
 		{
+			this._weaponType = eWeaponType.TURRET;
+
+			this._hitEnemy = false;
 			this._isShooting = true;
 			if (!this.turretMuzzleFlash.isPlaying)
 				this.turretMuzzleFlash.Play ();
@@ -86,10 +98,12 @@ public class TankRotation : MonoBehaviour {
 				this.turretMuzzleFlash.Stop ();
 			this.shootBullet ();
 			this.playSound ("turret");
-			Invoke ("InvokeFireRate", 0.2f);
+			Invoke ("InvokeFireRate", this._fireRate);
 		}
 		else if (Input.GetMouseButtonDown(1) && !this._isShooting)
 		{
+			this._weaponType = eWeaponType.MISSILE;
+
 			this._isShooting = true;
 			this._hitEnemy = false;
 
@@ -110,9 +124,10 @@ public class TankRotation : MonoBehaviour {
 		if (this._as)
 		{
 			if (type == "turret")
-				this._as.clip = turretShoot;
-			else
-			if (type == "missile")
+			{
+				this._as.clip = turretShoot;					
+			}
+			else if (type == "missile")
 			{
 				if (this._hitEnemy)
 					this._as.clip = missileHit;
@@ -121,6 +136,15 @@ public class TankRotation : MonoBehaviour {
 			}
 				this._as.Play ();
 		}
+	}
+
+	void doDamage(RaycastHit hit)
+	{
+		if (this._weaponType == eWeaponType.TURRET)
+			hit.collider.GetComponent<AIController> ().takeDamage (20);
+		if (this._weaponType == eWeaponType.MISSILE)
+			hit.collider.GetComponent<AIController> ().takeDamage (100);
+			
 	}
 
 #region Invokes / Coroutines
@@ -133,5 +157,12 @@ public class TankRotation : MonoBehaviour {
 	{
 		this._isShooting = false;
 	}
+#endregion
+
+
+#region Getters / Setters
+
+	public void setFireRate(float fireRate)	{this._fireRate = fireRate;}
+
 #endregion
 }

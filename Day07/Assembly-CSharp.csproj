@@ -46,9 +46,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\AIController.cs" />
+     <Compile Include="Assets\ExperienceText.cs" />
+     <Compile Include="Assets\HealthText.cs" />
+     <Compile Include="Assets\LevelText.cs" />
+     <Compile Include="Assets\Scripts\AIController.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\TankRotation.cs" />
+     <Compile Include="Assets\SpawnEnemies.cs" />
      <None Include="Assets\Models\tank\README.txt" />
      <None Include="Assets\Standard Assets\Environment\Water\Water4\Shaders\FXWater4Simple.shader" />
      <None Include="Assets\Standard Assets\ParticleSystems\Shaders\PriorityParticleAlpha.shader" />

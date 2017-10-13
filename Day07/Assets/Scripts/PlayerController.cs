@@ -4,7 +4,18 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
+#region Player Stats
+	private int		_health;
+	private int		_maxHealth = 300;
+	private int		_armor;
+	private float	_fireRate = 0.2f;
+#endregion
 
+#region Level handlers
+	private int		_level = 1;
+	private long 	_experience;
+	private long 	_maxExperience = 100;
+#endregion
 	[SerializeField]
 	private float	_speed = 2f;
 	[SerializeField]
@@ -12,6 +23,7 @@ public class PlayerController : MonoBehaviour {
 
 	private float		_sprintSpeed = 1f;
 	private ParticleSystem[] _particleSystems;
+	private ParticleSystem	_particleLevelUp;
 	private bool		_PSShouldLoop = false;
 
 
@@ -19,13 +31,14 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		this._particleSystems = GetComponentsInChildren<ParticleSystem> ();
+		this._health = this._maxHealth;
+		this._particleLevelUp = GameObject.FindGameObjectWithTag ("levelUp").GetComponent<ParticleSystem>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		this.playerInput ();
 		this.playParticle ();
-
 	}
 
 	void playerInput()
@@ -102,6 +115,69 @@ public class PlayerController : MonoBehaviour {
 				}
 			}
 		}
-		
 	}
+
+	public void takeDamage(int damage)
+	{
+		this._health -= damage - this._armor;
+		if (this._health <= 0)
+		{
+			destroy ();
+		}
+	}
+
+	void destroy()
+	{
+		Destroy (this.gameObject);
+	}
+
+#region Level handling
+
+	public void gainExp(int experience)
+	{
+		this._experience += experience;
+
+		if (this._experience >= _maxExperience)
+			this.levelUp ();
+	}
+
+	void levelUp()
+	{
+		this._experience -= this._maxExperience;
+		while (this._experience >= _maxExperience)
+		{
+			this._experience -= this._maxExperience;
+			this._level++;
+
+			this._maxExperience = (int)Mathf.Pow (this._level + (this._maxExperience / 600), 2);
+
+			if (!this._particleLevelUp.isPlaying)
+				this._particleLevelUp.Play ();
+
+			this.transform.localScale += new Vector3 (0.001f, 0.001f, 0.001f);
+
+			if (this._level % 5 == 0)
+			{
+				this._armor += 2;
+			}
+			if (this._level % 10 == 0)
+				this._fireRate -= 0.005f;
+			GetComponentInChildren<TankRotation> ().setFireRate (this._fireRate);
+			this._maxHealth += 50 * (this._level / 10);
+			this._health = this._maxHealth;
+		}
+	}
+
+#endregion
+
+#region Getters / Setters
+
+	public float	getFireRate()	{return (this._fireRate);}
+	public int		getLevel()		{return (this._level);}
+	public int		getHealth()		{return (this._health);}
+	public int		getMaxHealth()	{return (this._maxHealth);}
+	public long		getExp()		{return (this._experience);}
+	public long		getMaxExp()		{return (this._maxExperience);}
+
+#endregion
 }
